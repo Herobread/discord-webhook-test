@@ -7,17 +7,10 @@ jobs:
   discord_notification:
     runs-on: ubuntu-latest
     steps:
-      - name: Notify Discord Forum
+      - name: Notify Discord
         if: github.event.pull_request.draft == false
+        uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          PR_AUTHOR: ${{ github.actor }}
-        run: |
-          # Construct the JSON payload with "thread_name" (This becomes the Post Title)
-          # We escape quotes to prevent the JSON from breaking if the PR title has quotes
-
-          curl -H "Content-Type: application/json" \
-          -d "{\"content\": \"🚀 **Ready for Review** by **$PR_AUTHOR**\n$PR_URL\", \"thread_name\": \"$PR_TITLE\"}" \
-          "$DISCORD_WEBHOOK"
+        with:
+          args: '🚀 **PR Ready for Review:** ${{ github.event.pull_request.title }} (by ${{ github.actor }}) \n${{ github.event.pull_request.html_url }}'
